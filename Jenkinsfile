@@ -1,34 +1,49 @@
 pipeline {
-    agent any
+    agent { label 'dev' }
 
     stages {
 
-        stage("Code") {
+        stage('Checkout Code') {
             steps {
-                echo "Cloning From GitHub"
-                git url: 'https://github.com/yashkale402/Node-todo-cicd.git', branch: 'master'
+                echo "===== Pulling Latest Code ====="
+                git branch: 'main', url: 'https://github.com/your-repo/your-project.git'
             }
         }
 
-        stage("Test & Build") {
+        stage('Clean Old Deployment') {
             steps {
-                echo "Test & Build"
-                sh "docker build -t node-app ."
+                echo "===== Cleaning Old Files ====="
+                sh '''
+                sudo rm -rf /var/www/html/*
+                '''
             }
         }
 
-        stage("Deploy") {
+        stage('Deploy New Code') {
             steps {
-                echo "Deployment Successfully"
-               sh "docker compose down && docker compose up -d"
+                echo "===== Deploying New Files ====="
+                sh '''
+                sudo cp -r * /var/www/html/
+                '''
             }
         }
 
-        stage("Done") {
+        stage('Reload Nginx') {
             steps {
-                echo "Your Pipeline Successfully Run"
+                echo "===== Reloading Nginx ====="
+                sh '''
+                sudo systemctl reload nginx
+                '''
             }
         }
+    }
 
+    post {
+        success {
+            echo "===== Deployment Completed Successfully ====="
+        }
+        failure {
+            echo "===== Deployment Failed ====="
+        }
     }
 }
