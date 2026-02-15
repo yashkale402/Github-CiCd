@@ -6,7 +6,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 echo "===== Pulling Latest Code ====="
-                git branch: 'main', url: 'https://github.com/your-repo/your-project.git'
+                git branch: 'master', url: 'https://github.com/your-repo/your-project.git'
             }
         }
 
